@@ -70,6 +70,7 @@ public class UserServlet extends HttpServlet {
                     resp.getWriter().write("{\"error\":\"invalid_body\"}");
                     return;
                 }
+                
 
                 boolean ok = dao.login(json.get("id").getAsString(), json.get("password").getAsString());
                 resp.getWriter().write("{\"login\":" + ok + "}");
