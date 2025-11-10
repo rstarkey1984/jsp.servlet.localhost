@@ -1,0 +1,29 @@
+<!DOCTYPE html> <!-- 브라우저가 최신 웹 표준에 맞춰 작동하도록 사용함 -->
+<html>
+<head> <!-- HTML 문서의 정보를 담는 부분으로, 웹 페이지 자체에 표시되지는 않습니다. -->
+    <title>페이지 제목입니다.</title> <!-- 페이지 제목 --> 
+    
+    <!-- css 태그 -->
+    <style> 
+        html { color-scheme: light dark; }
+        body { width: 35em; margin: 0 auto;
+        font-family: Tahoma, Verdana, Arial, sans-serif; }
+    </style>
+
+</head>
+<body>
+    <h1>Hello, Tomcat!</h1>
+    <p>이 페이지는 Tomcat에서 /var/www/jsp.servlet.localhost/index.html 파일을 불러오고 있습니다.</p>
+    <p>현재시간 : <span id="date_text"></span><button id="myButton">클릭</button></p>
+    
+    
+    <!-- javascript 태그 -->
+    <script> 
+        document.getElementById("myButton").addEventListener("click", function() {
+        var date_text = new Date().toLocaleString('ko-KR');
+        document.getElementById("myButton").innerHTML = date_text;
+        });
+    </script>
+
+</body>
+</html>

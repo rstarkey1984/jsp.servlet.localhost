@@ -1,0 +1,30 @@
+{
+  // VS Code Task 설정 파일 버전 (2.0 이후부터는 이 형태 사용)
+  "version": "2.0.0",
+
+  "tasks": [
+    {
+      // VS Code에서 표시되는 작업 이름
+      "label": "Deploy to Tomcat",
+
+      // 어떤 방식으로 실행할지 (shell = 터미널에서 쉘 명령 실행)
+      "type": "shell",
+
+      // 실행할 실제 명령어 (bash 스크립트 실행)
+      "command": "./tomcat_deploy.sh",
+
+      // 명령이 실행되는 작업 디렉터리 설정
+      // 즉, 이 경로에서 ./tomcat_deploy.sh가 실행됨
+      "options": {
+        "cwd": "${workspaceFolder}/WEB-INF/"
+      },
+
+      // 이 작업을 빌드 그룹에 포함시키며, 기본 빌드 작업으로 설정
+      // → Ctrl + Shift + B 로 실행 가능
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
+}
