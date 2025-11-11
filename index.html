@@ -1,29 +1,33 @@
-<!DOCTYPE html> <!-- 브라우저가 최신 웹 표준에 맞춰 작동하도록 사용함 -->
-<html>
-<head> <!-- HTML 문서의 정보를 담는 부분으로, 웹 페이지 자체에 표시되지는 않습니다. -->
-    <title>페이지 제목입니다.</title> <!-- 페이지 제목 --> 
-    
-    <!-- css 태그 -->
-    <style> 
-        html { color-scheme: light dark; }
-        body { width: 35em; margin: 0 auto;
-        font-family: Tahoma, Verdana, Arial, sans-serif; }
-    </style>
-
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>메인 페이지 | My App</title>
+  <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 <body>
-    <h1>Hello, Tomcat!</h1>
-    <p>이 페이지는 Tomcat에서 /var/www/jsp.servlet.localhost/index.html 파일을 불러오고 있습니다.</p>
-    <p>현재시간 : <span id="date_text"></span><button id="myButton">클릭</button></p>
-    
-    
-    <!-- javascript 태그 -->
-    <script> 
-        document.getElementById("myButton").addEventListener("click", function() {
-        var date_text = new Date().toLocaleString('ko-KR');
-        document.getElementById("myButton").innerHTML = date_text;
-        });
-    </script>
+  <div class="wrapper">
+    <div class="card">
+      <div class="title">환영합니다 👋</div>
+      <div class="subtitle">서비스 이용을 위해 로그인하거나 회원가입을 진행해주세요.</div>
 
+      <div class="form-group">
+        <a href="/user/login">
+          <button type="button">로그인</button>
+        </a>
+      </div>
+
+      <div class="form-group">
+        <a href="/user/register">
+          <button type="button">회원가입</button>
+        </a>
+      </div>
+
+      <div class="helper">
+        계정이 없으신가요? <a href="/user/register">회원가입</a>  
+        <br>이미 계정이 있다면 <a href="/user/login">로그인</a>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
