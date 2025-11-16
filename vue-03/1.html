@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Vue 게시판 - 1단계 컴포넌트 기초</title>
+    <!-- Vue 3 CDN -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- 공통 스타일 (기존 vue.css 재사용) -->
+    <link rel="stylesheet" href="/assets/css/vue.css" />
+  </head>
+  <body>
+    <div id="app">
+      <h1>게시판 컴포넌트 연습 (1단계)</h1>
+
+      <!-- 🔹 게시판 목록 컴포넌트 사용 -->
+      <board-list-card
+        :boards="boards"
+        :page="page"
+        :size="size"
+        :has-next="hasNext"
+        :loading="loading"
+        :error="boardError"
+        @change-page="handleChangePage"
+        @change-size="handleChangeSize"
+        @edit="handleEdit"
+        @delete="handleDelete"
+      ></board-list-card>
+    </div>
+
+    <!-- 🔹 컴포넌트 템플릿: 원래 HTML 카드 조각을 분리 -->
+    <template id="board-list-card-template">
+      <div class="card">
+        <div class="row" style="justify-content: space-between">
+          <h2>게시판 목록</h2>
+          <div class="row">
+            <span class="muted">페이지당</span>
+            <!-- v-model 말고, 이벤트 기반으로 연습 -->
+            <select :value="size" @change="onChangeSize">
+              <option :value="5">5개</option>
+              <option :value="10">10개</option>
+              <option :value="20">20개</option>
+            </select>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 60px">번호</th>
+              <th>제목</th>
+              <th style="width: 160px" class="right">액션</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- boards 배열이 비어 있으면 안내 문구 -->
+            <tr v-if="boards.length === 0">
+              <td colspan="3" class="muted">게시글이 없습니다.</td>
+            </tr>
+            <!-- boards 반복 렌더링 -->
+            <tr v-for="b in boards" :key="b.idx">
+              <td>{{ b.idx }}</td>
+              <td>{{ b.title || '(제목 없음)' }}</td>
+              <td class="right">
+                <button class="secondary" @click="onEdit(b)">수정</button>
+                <button
+                  class="danger"
+                  style="margin-left: 4px"
+                  @click="onDelete(b.idx)"
+                >
+                  삭제
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- 페이징 -->
+        <div
+          class="row"
+          style="justify-content: space-between; margin-top: 10px"
+        >
+          <div>
+            <button
+              class="secondary"
+              @click="prevPage"
+              :disabled="page <= 1 || loading"
+            >
+              ◀ 이전
+            </button>
+            <button
+              class="secondary"
+              style="margin-left: 4px"
+              @click="nextPage"
+              :disabled="!hasNext || loading"
+            >
+              다음 ▶
+            </button>
+          </div>
+          <div class="muted">현재 페이지: {{ page }}</div>
+        </div>
+
+        <div class="error" v-if="error" style="margin-top: 6px">
+          {{ error }}
+        </div>
+      </div>
+    </template>
+
+    <!-- Vue 코드 -->
+    <script src="/vue-03/1.js"></script>
+  </body>
+</html>

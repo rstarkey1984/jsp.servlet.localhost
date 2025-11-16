@@ -1,10 +1,10 @@
 package localhost.myapp.listener;
 
 import jakarta.servlet.*;
-import jakarta.servlet.annotation.WebListener;
+//import jakarta.servlet.annotation.WebListener;
 import jakarta.servlet.http.*;
 
-@WebListener
+//@WebListener
 public class MyListener implements ServletContextListener, HttpSessionListener, ServletRequestListener {
 
     // 웹 애플리케이션 시작/종료
@@ -33,10 +33,10 @@ public class MyListener implements ServletContextListener, HttpSessionListener, 
     @Override
     public void requestInitialized(ServletRequestEvent sre) {
         HttpServletRequest req = (HttpServletRequest) sre.getServletRequest();
-        String url = req.getRequestURL().toString();     // 전체 URL
-        //String uri = req.getRequestURI();                // URI만
-        String query = req.getQueryString();             // 쿼리 파라미터
-        String clientIp = req.getRemoteAddr();           // 요청 보낸 IP
+        String url = req.getRequestURL().toString(); // 전체 URL
+        // String uri = req.getRequestURI(); // URI만
+        String query = req.getQueryString(); // 쿼리 파라미터
+        String clientIp = req.getRemoteAddr(); // 요청 보낸 IP
 
         System.out.println("➡ 요청 들어옴: " + url +
                 (query != null ? "?" + query : "") +

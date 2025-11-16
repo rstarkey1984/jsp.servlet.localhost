@@ -1,10 +1,36 @@
 {
-"java.project.sourcePaths": [
-    "WEB-INF/src"
-],
-"java.project.referencedLibraries": [
-    "WEB-INF/lib/*.jar",
-    "/usr/share/tomcat10/lib/servlet-api.jar"
-],
-"java.project.outputPath": "WEB-INF/classes"
+  // Java 프로젝트에서 소스 코드가 위치한 경로
+  "java.project.sourcePaths": ["WEB-INF/src"],
+
+  // 프로젝트에서 사용할 라이브러리(JAR) 경로들
+  "java.project.referencedLibraries": [
+    "WEB-INF/lib/*.jar", // WEB-INF/lib 안의 모든 JAR 포함
+    "/usr/share/tomcat10/lib/servlet-api.jar" // Tomcat 제공 servlet-api
+  ],
+
+  // Java 컴파일 결과(.class 파일) 출력 폴더
+  "java.project.outputPath": "WEB-INF/classes",
+
+  // VS Code가 *.jsp 파일을 HTML 파일처럼 인식하도록 설정
+  "files.associations": {
+    "*.jsp": "html"
+  },
+
+  // JSP 파일 저장 시 Prettier로 자동 포매팅
+  "[jsp]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode", // Prettier 사용
+    "editor.formatOnSave": true // 저장 시 자동 정렬
+  },
+
+  // HTML 파일에도 Prettier 자동 포매팅 적용
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+
+  // Javascript 파일에도 Prettier 자동 포매팅 적용
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  }
 }

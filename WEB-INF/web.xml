@@ -1,104 +1,102 @@
 <web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee
-                        https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
+    xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
     version="6.0">
 
-<!-- ====================== 문자 인코딩 필터 등록 ======================= -->
-<!-- 모든 요청/응답에 기본 문자셋(UTF-8)을 적용하여 한글 깨짐 방지 -->
-<filter>
-    <!-- 필터의 이름 -->
-    <filter-name>addDefaultCharset</filter-name>
+    <!-- ====================== 문자 인코딩 필터 등록 ======================= -->
+    <!-- 모든 요청/응답에 기본 문자셋(UTF-8)을 적용하여 한글 깨짐 방지 -->
+    <filter>
+        <!-- 필터의 이름 -->
+        <filter-name>addDefaultCharset</filter-name>
 
-    <!-- 실제 필터 클래스 (Tomcat에서 제공하는 기본 필터) -->
-    <filter-class>org.apache.catalina.filters.AddDefaultCharsetFilter</filter-class>
+        <!-- 실제 필터 클래스 (Tomcat에서 제공하는 기본 필터) -->
+        <filter-class>org.apache.catalina.filters.AddDefaultCharsetFilter</filter-class>
 
-    <!-- 초기 설정값: 기본 인코딩을 UTF-8로 정의 -->
-    <init-param>
-        <param-name>encoding</param-name>
-        <param-value>UTF-8</param-value>
-    </init-param>
-</filter>
+        <!-- 초기 설정값: 기본 인코딩을 UTF-8로 정의 -->
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+    </filter>
 
-<!-- 위 필터를 어떤 요청에 적용할 것인지 설정 -->
-<filter-mapping>
-    <!-- 적용할 필터 이름 (위에서 정의한 이름과 동일해야 함) -->
-    <filter-name>addDefaultCharset</filter-name>
+    <!-- 위 필터를 어떤 요청에 적용할 것인지 설정 -->
+    <filter-mapping>
+        <!-- 적용할 필터 이름 (위에서 정의한 이름과 동일해야 함) -->
+        <filter-name>addDefaultCharset</filter-name>
 
-    <!-- 전체 요청에 적용 (모든 URL에 대해 UTF-8 인코딩 사용) -->
-    <url-pattern>/*</url-pattern>
-</filter-mapping>
-
-
-<!-- ===================== 민감 폴더 접근 차단 설정 ===================== -->
-<!-- 웹브라우저로 아래 경로(.vscode, .git, .idea 등)에 직접 접근하지 못하도록 차단 -->
-<security-constraint>
-    <web-resource-collection>
-        <!-- 이 보안 규칙의 이름(식별용) -->
-        <web-resource-name>Block Hidden Configs</web-resource-name>
-
-        <!-- VS Code 설정 폴더 접근 차단 -->
-        <url-pattern>/.vscode/*</url-pattern>
-
-        <!-- Git 폴더 내용(URL로 접근 가능하면 민감 정보 노출됨 → 차단) -->
-        <url-pattern>/.git/*</url-pattern>
-
-        <!-- IntelliJ IDEA 설정 폴더 차단 -->
-        <url-pattern>/.idea/*</url-pattern>
-    </web-resource-collection>
-
-    <!-- <auth-constraint />에 값이 없으면, “모든 사용자 접근 불가(403 Forbidden)” 효과 -->
-    <!-- 즉, 로그인한 사용자도 해당 경로에는 접근할 수 없음 -->
-    <auth-constraint />
-</security-constraint>
-
-<!-- 1. Servlet 이름과 클래스(.class 파일)를 연결하는 설정 -->
-<servlet>
-    <!-- 이 서블릿을 구별하기 위한 이름 -->
-    <servlet-name>첫번째서블릿이름</servlet-name>
-
-    <!-- 실제 자바 서블릿 클래스 이름 (패키지가 없다면 클래스 이름만 작성) -->
-    <!-- 예: 패키지가 있다면 com.example.HelloServlet_01 처럼 작성 -->
-    <servlet-class>localhost.java.ex.HelloServlet_01</servlet-class>
-</servlet>
-
-<!-- 2. 특정 URL 패턴을 위에서 정의한 서블릿과 연결하는 설정 -->
-<servlet-mapping>
-    <!-- 어떤 서블릿과 연결할지 지정 (위에서 선언한 servlet-name과 같아야 함) -->
-    <servlet-name>첫번째서블릿이름</servlet-name>
-
-    <!-- 클라이언트가 이 URL로 요청하면 해당 서블릿이 실행됨 -->
-    <!-- 예: http://localhost:8080/프로젝트명/hello_01 -->
-    <!-- @Annotation 이랑 경로가 겹치면 Tomcat 서버 시작시 에러 -->
-    <url-pattern>/ex/hello_01</url-pattern>
-</servlet-mapping>
+        <!-- 전체 요청에 적용 (모든 URL에 대해 UTF-8 인코딩 사용) -->
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 
 
-<!-- 모든 요청/응답 UTF-8로 고정 -->
-<filter>
-    <filter-name>CharacterEncodingFilter</filter-name>
-    <filter-class>org.apache.catalina.filters.SetCharacterEncodingFilter</filter-class>
-    <init-param>
-        <param-name>encoding</param-name>
-        <param-value>UTF-8</param-value>
-    </init-param>
-    <init-param>
-        <param-name>ignore</param-name>
-        <param-value>false</param-value>
-    </init-param>
-</filter>
-<filter-mapping>
-    <filter-name>CharacterEncodingFilter</filter-name>
-    <url-pattern>/*</url-pattern>
-</filter-mapping>
+    <!-- ===================== 민감 폴더 접근 차단 설정 ===================== -->
+    <!-- 웹브라우저로 아래 경로(.vscode, .git, .idea 등)에 직접 접근하지 못하도록 차단 -->
+    <security-constraint>
+        <web-resource-collection>
+            <!-- 이 보안 규칙의 이름(식별용) -->
+            <web-resource-name>Block Hidden Configs</web-resource-name>
 
-<!-- 톰캣 JNDI DataSource 참조 (이름 반드시 일치) -->
-  <resource-ref>
+            <!-- VS Code 설정 폴더 접근 차단 -->
+            <url-pattern>/.vscode/*</url-pattern>
+
+            <!-- Git 폴더 내용(URL로 접근 가능하면 민감 정보 노출됨 → 차단) -->
+            <url-pattern>/.git/*</url-pattern>
+
+            <!-- IntelliJ IDEA 설정 폴더 차단 -->
+            <url-pattern>/.idea/*</url-pattern>
+        </web-resource-collection>
+
+        <!-- <auth-constraint />에 값이 없으면, “모든 사용자 접근 불가(403 Forbidden)” 효과 -->
+        <!-- 즉, 로그인한 사용자도 해당 경로에는 접근할 수 없음 -->
+        <auth-constraint />
+    </security-constraint>
+
+    <!-- 1. Servlet 이름과 클래스(.class 파일)를 연결하는 설정 -->
+    <servlet>
+        <!-- 이 서블릿을 구별하기 위한 이름 -->
+        <servlet-name>첫번째서블릿이름</servlet-name>
+
+        <!-- 실제 자바 서블릿 클래스 이름 (패키지가 없다면 클래스 이름만 작성) -->
+        <!-- 예: 패키지가 있다면 com.example.HelloServlet_01 처럼 작성 -->
+        <servlet-class>localhost.java.ex.HelloServlet_01</servlet-class>
+    </servlet>
+
+    <!-- 2. 특정 URL 패턴을 위에서 정의한 서블릿과 연결하는 설정 -->
+    <servlet-mapping>
+        <!-- 어떤 서블릿과 연결할지 지정 (위에서 선언한 servlet-name과 같아야 함) -->
+        <servlet-name>첫번째서블릿이름</servlet-name>
+
+        <!-- 클라이언트가 이 URL로 요청하면 해당 서블릿이 실행됨 -->
+        <!-- 예: http://localhost:8080/프로젝트명/hello_01 -->
+        <!-- @Annotation 이랑 경로가 겹치면 Tomcat 서버 시작시 에러 -->
+        <url-pattern>/ex/hello_01</url-pattern>
+    </servlet-mapping>
+
+
+    <!-- 모든 요청/응답 UTF-8로 고정 -->
+    <filter>
+        <filter-name>CharacterEncodingFilter</filter-name>
+        <filter-class>org.apache.catalina.filters.SetCharacterEncodingFilter</filter-class>
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+        <init-param>
+            <param-name>ignore</param-name>
+            <param-value>false</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>CharacterEncodingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <!-- 톰캣 JNDI DataSource 참조 (이름 반드시 일치) -->
+    <!-- <resource-ref>
     <description>MySQL Connection Pool</description>
     <res-ref-name>jdbc/MyDB</res-ref-name>
     <res-type>javax.sql.DataSource</res-type>
     <res-auth>Container</res-auth>
-  </resource-ref>
+  </resource-ref> -->
 
 </web-app>
-

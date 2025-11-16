@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Vue 카운터</title>
+    <!-- CDN: Vue 3 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  </head>
+  <body>
+    <div id="app" style="text-align: center">
+      <!-- 화면은 "데이터"에 자동으로 바인딩 -->
+      <p>Count: {{ count }}</p>
+      <button @click="increment">+1</button>
+    </div>
+
+    <script>
+      const { createApp } = Vue;
+
+      createApp({
+        // 상태(state)는 data()에서 반환
+        data() {
+          return {
+            count: 0,
+          };
+        },
+        // 동작(method)는 methods에 정의
+        methods: {
+          increment() {
+            this.count = this.count + 1; // 상태만 바꾸면, 화면은 자동으로 갱신됨
+          },
+        },
+      }).mount("#app");
+    </script>
+  </body>
+</html>

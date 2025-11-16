@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Vue 리스트 렌더링 (v-for)</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+      }
+      h1 {
+        margin-bottom: 10px;
+      }
+      ul {
+        padding-left: 20px;
+      }
+      li {
+        margin: 4px 0;
+      }
+      .box {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin: 16px 0;
+        background: #f8faff;
+      }
+      input {
+        padding: 6px 10px;
+        font-size: 14px;
+      }
+      button {
+        padding: 6px 10px;
+        font-size: 14px;
+        margin-left: 4px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>v-for로 목록 렌더링하기</h1>
+
+    <div id="app">
+      <!-- 1) 기본 리스트 렌더링 -->
+      <div class="box">
+        <h3>1. 과일 리스트 (기본 v-for)</h3>
+        <ul>
+          <!-- fruits 배열을 순회하면서 fruit 를 하나씩 꺼냄 -->
+          <li v-for="fruit in fruits">{{ fruit }}</li>
+        </ul>
+      </div>
+
+      <!-- 2) (item, index) 같이 사용 -->
+      <div class="box">
+        <h3>2. (item, index) 함께 사용</h3>
+        <ul>
+          <!-- (todo, index) 형식으로 인덱스도 함께 사용 가능 -->
+          <li v-for="(todo, index) in todos" :key="index">
+            {{ index }}번: {{ todo }}
+          </li>
+        </ul>
+      </div>
+
+      <!-- 3) 객체 배열 + key 사용 -->
+      <div class="box">
+        <h3>3. 객체 배열 + key (권장)</h3>
+        <p>학생 목록:</p>
+        <ul>
+          <!-- students 배열의 각 요소는 { id, name } 형태의 객체 -->
+          <!-- :key는 Vue가 각 요소를 구분할 수 있게 해주는 유니크 값 -->
+          <li v-for="s in students" :key="s.id">{{ s.id }}번 - {{ s.name }}</li>
+        </ul>
+      </div>
+
+      <!-- 4) 입력으로 리스트에 항목 추가 -->
+      <div class="box">
+        <h3>4. 입력값을 v-for 리스트에 추가해보기</h3>
+        <input
+          v-model="newTodo"
+          placeholder="할 일을 입력하고 추가 버튼을 눌러보세요"
+        />
+        <button @click="addTodo">추가</button>
+
+        <ul>
+          <li v-for="(todo, i) in todos" :key="i">{{ i + 1 }}. {{ todo }}</li>
+        </ul>
+      </div>
+    </div>
+
+    <script>
+      const { createApp, ref } = Vue;
+
+      createApp({
+        setup() {
+          // 1) 문자열 배열
+          const fruits = ref(["사과", "바나나", "포도"]);
+
+          // 2) 할 일 목록
+          const todos = ref(["Vue 공부하기", "JSP 복습하기"]);
+
+          // 3) 객체 배열 (id, name)
+          const students = ref([
+            { id: 1, name: "홍길동" },
+            { id: 2, name: "김철수" },
+            { id: 3, name: "이영희" },
+          ]);
+
+          // 4) 입력값을 받아서 todos에 추가
+          const newTodo = ref("");
+
+          const addTodo = () => {
+            if (newTodo.value.trim() === "") return;
+            todos.value.push(newTodo.value.trim());
+            newTodo.value = "";
+          };
+
+          return {
+            fruits,
+            todos,
+            students,
+            newTodo,
+            addTodo,
+          };
+        },
+      }).mount("#app");
+    </script>
+  </body>
+</html>

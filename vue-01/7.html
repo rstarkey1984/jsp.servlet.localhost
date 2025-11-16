@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Vue 조건부 + 리스트 렌더링</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+      }
+      h1 {
+        text-align: center;
+      }
+      .card {
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 20px;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+        background: #f8faff;
+      }
+      input {
+        padding: 8px;
+        font-size: 14px;
+        width: 70%;
+      }
+      button {
+        padding: 8px 10px;
+        font-size: 14px;
+        margin-left: 4px;
+        cursor: pointer;
+      }
+      ul {
+        padding-left: 20px;
+      }
+      li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 4px 0;
+      }
+      .empty {
+        color: #888;
+        margin-top: 10px;
+      }
+      .count {
+        margin-top: 10px;
+        font-size: 14px;
+        color: #555;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>할 일 목록 (v-if + v-for)</h1>
+
+    <div id="app" class="card">
+      <!-- 입력 영역 -->
+      <div>
+        <input
+          v-model="newTodo"
+          placeholder="할 일을 입력하고 추가 버튼을 눌러보세요"
+          @keyup.enter="addTodo"
+        />
+        <button @click="addTodo">추가</button>
+        <button @click="clearTodos">전체 삭제</button>
+      </div>
+
+      <!-- 개수 표시 -->
+      <p class="count">총 할 일: {{ todos.length }}개</p>
+
+      <!-- 1) 할 일이 하나도 없을 때 -->
+      <p class="empty" v-if="todos.length === 0">
+        현재 등록된 할 일이 없습니다. 할 일을 추가해보세요 🙂
+      </p>
+
+      <!-- 2) 할 일이 하나 이상 있을 때 -->
+      <ul v-else>
+        <!-- v-for로 todos 배열을 렌더링 -->
+        <li v-for="(todo, index) in todos" :key="index">
+          <span>{{ index + 1 }}. {{ todo }}</span>
+          <button @click="removeTodo(index)">삭제</button>
+        </li>
+      </ul>
+    </div>
+
+    <script>
+      const { createApp, ref } = Vue;
+
+      createApp({
+        setup() {
+          // 할 일 목록 (처음에는 비어 있음)
+          const todos = ref([]);
+
+          // 입력창과 연결될 ref
+          const newTodo = ref("");
+
+          // 할 일 추가
+          const addTodo = () => {
+            const trimmed = newTodo.value.trim();
+            if (trimmed === "") return; // 공백은 무시
+            todos.value.push(trimmed);
+            newTodo.value = "";
+          };
+
+          // 특정 인덱스의 할 일 삭제
+          const removeTodo = (index) => {
+            todos.value.splice(index, 1);
+          };
+
+          // 전체 삭제
+          const clearTodos = () => {
+            todos.value = [];
+          };
+
+          return {
+            todos,
+            newTodo,
+            addTodo,
+            removeTodo,
+            clearTodos,
+          };
+        },
+      }).mount("#app");
+    </script>
+  </body>
+</html>

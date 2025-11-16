@@ -1,112 +1,94 @@
 package localhost.myapp.common;
 
-import javax.naming.InitialContext;
 import javax.naming.Context;
+import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
 /**
- * DB DataSource 헬퍼 (JNDI 기반, Lazy-init + Double-Checked Locking)
+ * JNDI 기반 DataSource 헬퍼 클래스
  *
  * 역할
- * - 톰캣(JNDI)에 등록된 커넥션 풀(javax.sql.DataSource)을 최초 1회만 조회(lookup)하고,
- *   이후에는 같은 인스턴스를 재사용한다(캐싱).
+ * - 톰캣(JNDI)에 등록된 커넥션 풀(javax.sql.DataSource)을 애플리케이션 전역에서
+ * 하나의 정적(static) 인스턴스로 공유한다.
+ * - DB 연결은 ds.getConnection() 으로 필요할 때마다 풀에서 빌려 쓰는 방식.
  *
- * 왜 필요한가
- * - 매 요청마다 InitialContext.lookup()을 호출하는 것은 불필요한 오버헤드가 될 수 있다.
- * - 애플리케이션 전역에서 동일한 DataSource를 안전하게 공유하려면 스레드-세이프한 캐시가 유용하다.
- *
- * 전제
- * - 톰캣의 Context 설정에 아래와 같이 Resource가 정의되어 있어야 한다.
- *   <Resource name="jdbc/MyDB" ... type="javax.sql.DataSource" ... />
- * - (선택) web.xml에 <resource-ref>로 res-ref-name/res-type 매핑을 선언하면
- *   컨테이너가 java:comp/env 네임스페이스에 안전하게 바인딩한다.
- *
- * 주의 사항
- * - 실제 커넥션(Connection) 객체는 여기서 만들지 않는다.
- *   DataSource는 '풀'의 핸들이고, Connection은 필요할 때마다 ds.getConnection()으로 빌려 쓰고 닫는다.
- * - DataSource 자체는 닫을 필요가 없다(컨테이너가 라이프사이클 관리).
+ * 특징
+ * - static 초기화 블록에서 딱 한 번 lookup → 캐시
+ * - 스레드 안전: JVM이 클래스 로딩 시 static 블록을 단 한 번만 실행하도록 보장
+ * - final 키워드로 DataSource 인스턴스 불변성 확보
  */
 public class DB {
 
     /**
-     * DataSource 캐시 필드.
+     * 톰캣에서 제공하는 DataSource(커넥션 풀) 객체
      *
-     * - volatile:
-     *   더블 체크 락킹(DCL) 패턴에서 가시성/재정렬 문제를 방지하기 위해 필요.
-     *   (JMM 상 안전한 DCL을 보장하기 위한 핵심 키워드)
+     * - final: 초기화 이후 값 변경 불가
+     * - static: 애플리케이션 전역에서 단 하나의 인스턴스만 사용
      */
-    private static volatile DataSource ds;
+    private static final DataSource ds;
 
     /**
-     * 애플리케이션 전역 DataSource 접근자.
+     * static 초기화 블록
      *
      * 동작
-     * 1) 최초 호출 시에만 JNDI lookup 수행(느긋한 초기화, Lazy Initialization).
-     * 2) 이후 호출은 캐시된 ds를 즉시 반환(오버헤드 최소화).
+     * - 클래스가 JVM에 의해 처음 로딩될 때 단 한 번 실행됨
+     * - 여기서 JNDI Lookup을 수행하여 DataSource를 찾고 캐싱함
      *
-     * 스레드-세이프
-     * - DCL(Double-Checked Locking) + synchronized 블록으로 초기화 경쟁 방지.
+     * 장점
+     * - 스레드-세이프 (JVM 보장)
+     * - DB 설정 오류가 있으면 애플리케이션 초기 구동 단계에서 바로 예외 발생 → 문제 조기 발견
+     */
+    static {
+        try {
+            // 톰캣이 제공하는 JNDI 초기 컨텍스트
+            Context ctx = new InitialContext();
+
+            /**
+             * JNDI Lookup
+             *
+             * "java:comp/env/" :
+             * 웹 애플리케이션 전용 JNDI 네임스페이스
+             *
+             * "jdbc/MyDB" :
+             * context.xml 또는 server.xml에 아래처럼 선언한 Resource 이름
+             *
+             * <Resource name="jdbc/MyDB"
+             * type="javax.sql.DataSource"
+             * ... />
+             */
+            ds = (DataSource) ctx.lookup("java:comp/env/jdbc/MyDB");
+
+        } catch (Exception e) {
+            /**
+             * Lookup 실패 시 발생 가능한 예외
+             * - NameNotFoundException : Resource 이름이 틀렸거나 바인딩되지 않았을 때
+             * - NoInitialContextException : 컨테이너(JNDI)가 없는 환경에서 실행될 때
+             *
+             * 예외 발생 시 애플리케이션 초기화 자체를 중단시키는 것이 좋음
+             * → DB 연결이 필수인 웹앱의 경우 조기 실패(Fail Fast) 전략이 안정적
+             */
+            throw new RuntimeException("JNDI DataSource lookup failed: jdbc/MyDB", e);
+        }
+    }
+
+    /**
+     * 유틸리티 클래스이므로 인스턴스 생성 금지
+     * (new DB() 하지 못하도록 막음)
+     */
+    private DB() {
+    }
+
+    /**
+     * DataSource 전역 접근자
      *
-     * @return 톰캣이 관리하는 javax.sql.DataSource (커넥션 풀 핸들)
-     * @throws RuntimeException 초기화 실패(예: 네이밍 불일치, 컨텍스트 미바인딩) 시 래핑하여 던짐
+     * @return 톰캣이 관리하는 커넥션 풀 객체(DataSource)
+     *
+     *         사용 예:
+     *         try (Connection con = DB.getDataSource().getConnection()) {
+     *         // SQL 작업 수행
+     *         }
      */
     public static DataSource getDataSource() {
-        // 1차 체크: 이미 초기화된 경우 동기화 없이 빠르게 반환
-        if (ds == null) {
-            synchronized (DB.class) {
-                // 2차 체크: 여러 스레드가 동시 접근했더라도 최초 1회만 초기화 보장
-                if (ds == null) {
-                    try {
-                        // JNDI 초기 컨텍스트
-                        Context ic = new InitialContext();
-
-                        /*
-                         * java:comp/env/ 접두사
-                         * - 웹 애플리케이션마다 분리된 "컴포넌트 전용" JNDI 네임스페이스.
-                         * - <resource-ref>를 사용하면 res-ref-name으로 이 네임스페이스에 매핑된다.
-                         * - 여기서는 "jdbc/MyDB"라는 이름으로 바인딩된 DataSource를 찾는다.
-                         *
-                         * Lookup 이름 정리
-                         * - 애플리케이션 코드에서는 보통 "java:comp/env/jdbc/MyDB"로 조회.
-                         * - 톰캣 Context의 <Resource name="jdbc/MyDB" .../> 와 일치해야 한다.
-                         */
-                        ds = (DataSource) ic.lookup("java:comp/env/jdbc/MyDB");
-
-                        /*
-                         * 여기서 DataSource 인스턴스는 '커넥션 풀 관리 객체'이지,
-                         * 실제 DB 커넥션을 바로 만드는 것은 아니다.
-                         * 실제 커넥션은 아래와 같이 필요 시마다 획득:
-                         *
-                         * try (Connection con = ds.getConnection()) {
-                         *     // SQL 작업
-                         * } // con.close() 호출로 커넥션 '반납' (풀로 복귀)
-                         */
-
-                    } catch (Exception e) {
-                        /*
-                         * 대표적인 실패 케이스
-                         * - javax.naming.NameNotFoundException:
-                         *   "jdbc/MyDB" 이름으로 바인딩된 리소스를 찾지 못했을 때.
-                         *   → Context/ROOT.xml(or context.xml)의 <Resource name="jdbc/MyDB".../> 확인
-                         *   → web.xml의 <resource-ref> res-ref-name 일치 여부 확인
-                         *   → 톰캣 재기동 필요 여부 확인
-                         *
-                         * - NoInitialContextException:
-                         *   컨테이너 외부(예: 단위 테스트)에서 실행했고 JNDI가 구성되지 않았을 때.
-                         *
-                         * 복구 전략
-                         * - 배포 환경: 설정/이름 오타 수정 후 재배포
-                         * - 테스트 환경: DataSource를 직접 주입(팩토리/DI), 또는 임베디드 컨테이너 사용
-                         */
-                        throw new RuntimeException(
-                            "JNDI lookup failed for 'jdbc/MyDB'. " +
-                            "Check <Resource name> and <resource-ref> naming/binding in Tomcat Context.",
-                            e
-                        );
-                    }
-                }
-            }
-        }
         return ds;
     }
 }

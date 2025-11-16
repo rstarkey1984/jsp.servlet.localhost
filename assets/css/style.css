@@ -1,132 +1,517 @@
 :root {
-    --bg: #eef2f7;
-    --card-bg: #ffffff;
-    --primary: #2563eb;
-    --primary-dark: #1d4ed8;
-    --border: #d1d5db;
-    --text: #111827;
-    --muted: #6b7280;
+  --bg: #eef2f7;
+  --card-bg: #ffffff;
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --border: #d1d5db;
+  --text: #111827;
+  --muted: #6b7280;
 }
+
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
+
+html,
 body {
-    margin: 0;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: radial-gradient(circle at top, #edf2ff 0%, #eef2f7 50%, #ffffff 100%);
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    color: var(--text);
+  height: 100%;
+  margin: 0;
 }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  align-items: center;
+  background: radial-gradient(
+    circle at top,
+    #edf2ff 0%,
+    #eef2f7 50%,
+    #ffffff 100%
+  );
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.main-content {
+  flex: 1;
+}
+
 .wrapper {
-    width: 100%;
-    max-width: 420px;
-    padding: 20px;
+  width: 100%;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
 }
+
 .card {
-    background: var(--card-bg);
-    border-radius: 18px;
-    padding: 28px 26px 30px;
-    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.10);
-    border: 1px solid rgba(255,255,255,0.35);
+  width: 100%;
+  max-width: 900px; /* 넓은 화면 기준 최대값 */
+  min-width: 600px; /* 기본 최소 폭: 600px */
+  background: var(--card-bg);
+  border-radius: 18px;
+  padding: 28px 26px 30px;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.35);
 }
+
+.register_form {
+  min-width: 400px; /* 기본 최소 폭: 600px */
+}
+
 .title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 6px;
-    text-align: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+  text-align: center;
 }
+
 .subtitle {
-    font-size: 0.85rem;
-    color: var(--muted);
-    text-align: center;
-    margin-bottom: 24px;
+  font-size: 0.85rem;
+  color: var(--muted);
+  text-align: center;
+  margin-bottom: 24px;
 }
+
 .form-group {
-    margin-bottom: 16px;
+  margin-bottom: 16px;
 }
+
 label {
-    display: block;
-    font-size: 0.78rem;
-    font-weight: 600;
-    margin-bottom: 6px;
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin-bottom: 6px;
 }
+
 .input {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    font-size: 0.9rem;
-    background: #fff;
-    color: #000;
-    transition: all .15s ease-in-out;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 0.9rem;
+  background: #fff;
+  color: #000;
+  transition: all 0.15s ease-in-out;
 }
+
 .input:focus {
-    outline: none;
-    border-color: rgba(37, 99, 235, 0.8);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
+  outline: none;
+  border-color: rgba(37, 99, 235, 0.8);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
 }
+
 button {
-    width: 100%;
-    border: none;
-    background: var(--primary);
-    color: #fff;
-    padding: 12px 0;
-    border-radius: 10px;
-    font-size: 0.95rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background .15s ease;
-    margin-top: 6px;
+  width: 100%;
+  border: none;
+  background: var(--primary);
+  color: #fff;
+  padding: 12px 0;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  margin-top: 6px;
 }
+
 button:hover {
-    background: var(--primary-dark);
+  background: var(--primary-dark);
 }
+
 .helper {
-    margin-top: 14px;
-    text-align: center;
-    font-size: 0.78rem;
-    color: var(--muted);
+  margin-top: 14px;
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--muted);
 }
+
 @media (prefers-color-scheme: dark) {
-    :root {
-        --bg: #0f172a;
-        --card-bg: rgba(15, 23, 42, 0.5);
-        --text: #e2e8f0;
-        --muted: #94a3b8;
-        --border: rgba(148, 163, 184, 0.4);
-    }
-    body {
-        background: radial-gradient(circle at top, #1f2937 0%, #0f172a 45%, #020617 100%);
-    }
-    .card {
-        backdrop-filter: blur(18px);
-    }
-    .input {
-        background: rgba(15, 23, 42, 0.6);
-        color: #fff;
-    }
+  :root {
+    --bg: #0f172a;
+    --card-bg: rgba(15, 23, 42, 0.5);
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --border: rgba(148, 163, 184, 0.4);
+  }
+
+  body {
+    background: radial-gradient(
+      circle at top,
+      #1f2937 0%,
+      #0f172a 45%,
+      #020617 100%
+    );
+  }
+
+  .card {
+    backdrop-filter: blur(18px);
+  }
+
+  .input {
+    background: rgba(15, 23, 42, 0.6);
+    color: #fff;
+  }
 }
 
 .error-box {
-    background-color: #ffe5e5;
-    color: #d60000;
-    border: 1px solid #ffb3b3;
-    border-radius: 8px;
-    padding: 10px 15px;
-    margin-bottom: 15px;
-    font-size: 0.95rem;
-    text-align: center;
+  background-color: #ffe5e5;
+  color: #d60000;
+  border: 1px solid #ffb3b3;
+  border-radius: 8px;
+  padding: 10px 15px;
+  margin-bottom: 15px;
+  font-size: 0.95rem;
+  text-align: center;
 }
 
 a {
-  color: #3498db;              /* 밝은 파랑 */
-  text-decoration: none;       /* 밑줄 제거 */
-  transition: color 0.2s ease; /* 마우스오버 시 부드럽게 */
+  color: #3498db;
+  /* 밝은 파랑 */
+  text-decoration: none;
+  /* 밑줄 제거 */
+  transition: color 0.2s ease;
+  /* 마우스오버 시 부드럽게 */
 }
 
 a:hover {
-  color: #1d6fa5;              /* 어두운 파랑으로 변화 */
+  color: #1d6fa5;
+  /* 어두운 파랑으로 변화 */
+}
+
+/* 기본 버튼 스타일 개선 */
+.btn {
+  padding: 12px 0;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+  transition: all 0.18s ease;
+}
+
+.btn:hover {
+  background: linear-gradient(135deg, #1d4ed8, #1e40af);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.32);
+}
+
+/* 빨간 버튼 (삭제) */
+.btn-danger {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+}
+
+.btn-danger:hover {
+  background: linear-gradient(135deg, #b91c1c, #991b1b);
+  box-shadow: 0 6px 15px rgba(220, 38, 38, 0.35);
+}
+
+/* 보조 버튼 (흰색/연회색) */
+.btn-secondary {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  box-shadow: none;
+}
+
+.btn-secondary:hover {
+  background: #e5e7eb;
+}
+
+/* a 태그 버튼 스타일 보정 */
+a.button-link {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+}
+
+.table-container {
+  min-height: 341px;
+  /* 원하는 높이 */
+}
+
+.pagination {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  font-size: 0.8rem;
+}
+
+.page-link {
+  min-width: 28px;
+  padding: 6px 8px;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  text-align: center;
+  cursor: pointer;
+  background: #f9fafb;
+}
+
+.page-link:hover {
+  background: #e5e7eb;
+}
+
+.page-link.current {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+  font-weight: 700;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin: 10px 0 6px;
+}
+
+.page-link {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: #2563eb;
+  background: #f3f4f6;
+  transition: background 0.15s ease;
+  text-decoration: none;
+}
+
+.page-link:hover {
+  background: #e5e7eb;
+}
+
+.page-link.current {
+  background: #2563eb;
+  color: white;
+  font-weight: bold;
+}
+
+.page-link.disabled {
+  background: #f3f4f6;
+  color: #9ca3af;
+  cursor: default;
+  pointer-events: none;
+  /* 클릭 방지 */
+}
+
+/* ===========================
+   상단 헤더 / 네비게이션 바
+   =========================== */
+
+.site-header {
+  width: 100%;
+  background: #111827; /* 진한 남색/블랙톤 */
+  color: #f9fafb;
+  border-bottom: 1px solid #1f2937;
+  margin-bottom: 16px;
+}
+
+.site-header-inner {
+  max-width: 960px; /* 너비는 wrapper/card와 맞춰주면 좋음 */
+  margin: 0 auto;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+/* 왼쪽: 로고 + 메뉴 */
+.site-header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.site-logo {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #f9fafb;
+  text-decoration: none;
+}
+
+.site-logo:hover {
+  color: #e5e7eb;
+}
+
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.site-nav-link {
+  font-size: 0.9rem;
+  color: #d1d5db;
+  text-decoration: none;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.site-nav-link:hover {
+  background: #1f2937;
+  color: #f9fafb;
+}
+
+/* 오른쪽: 로그인 / 유저 정보 영역 */
+
+.site-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* 유저 정보(아바타 + 이름) */
+.user-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: #e5e7eb;
+}
+
+.user-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 9999px;
+  background: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #f9fafb;
+}
+
+/* 버튼 스타일 보강 (있으면 덮어쓰기 / 없으면 새로 사용) */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+/* 헤더용 라이트 아웃라인 버튼 */
+.btn-outline-light {
+  background: transparent;
+  border: 1px solid #9ca3af;
+  color: #e5e7eb;
+}
+
+.btn-outline-light:hover {
+  border-color: #f9fafb;
+  background: #374151;
+}
+
+/* 헤더용 파란 라이트 버튼 (회원가입 등) */
+.btn-primary-light {
+  background: #2563eb;
+  color: #f9fafb;
+  border: 1px solid #2563eb;
+}
+
+.btn-primary-light:hover {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+/* 기존 .btn-danger, .btn-secondary 등이 있다면 그대로 사용 가능
+   혹시 없다면 최소 기본값: */
+
+.btn-danger {
+  background: #dc2626;
+  color: #f9fafb;
+  border: 1px solid #b91c1c;
+}
+
+.btn-danger:hover {
+  background: #b91c1c;
+  border-color: #991b1b;
+}
+
+.btn-secondary {
+  background: #6b7280;
+  color: #f9fafb;
+  border: 1px solid #4b5563;
+}
+
+.btn-secondary:hover {
+  background: #4b5563;
+  border-color: #374151;
+}
+
+/* ===========================
+   최소형 Footer (Copyright Only)
+   =========================== */
+
+.site-footer {
+  width: 100%;
+  padding: 18px 0;
+  margin-top: 40px;
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+}
+
+.footer-copy {
+  text-align: center;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+/* 다크모드 대응 */
+@media (prefers-color-scheme: dark) {
+  .site-footer {
+    background: #0f172a;
+    border-top: 1px solid #334155;
+  }
+  .footer-copy {
+    color: #94a3b8;
+  }
+}
+
+@media (max-width: 600px) {
+  .card {
+    min-width: 0; /* 기본 min-width 제거 */
+    width: 100%; /* 모바일에서 자연스럽게 전체폭 */
+    max-width: 100%;
+    padding: 20px 16px; /* 모바일 읽기 좋은 패딩 */
+  }
+}
+
+.button-row {
+  display: flex;
+  justify-content: center; /* 가운데 정렬 */
+  align-items: center;
+  gap: 10px; /* 버튼 사이 간격 */
+  margin-top: 16px;
+  flex-wrap: wrap; /* 좁은 화면에서는 자동으로 다음 줄로 */
+}
+
+.button-row .btn {
+  min-width: 110px; /* 버튼 가로폭 일정하게 */
+  padding: 10px 16px;
+  font-size: 0.9rem;
+}
+
+.button-row form {
+  margin: 0; /* form 기본 margin 제거 */
+}
+
+/* a 태그를 버튼처럼 쓸 때 */
+a.btn {
+  text-decoration: none;
 }

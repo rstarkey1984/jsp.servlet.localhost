@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Vue + Fetch 구글 뉴스</title>
+    <!-- Vue 3 CDN -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+      body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+        margin: 20px;
+      }
+      .news-list {
+        list-style: none;
+        padding: 0;
+      }
+      .news-item {
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #e5e7eb;
+      }
+      .news-title {
+        font-weight: 600;
+        text-decoration: none;
+      }
+      .news-title:hover {
+        text-decoration: underline;
+      }
+      .news-source {
+        color: #6b7280;
+        font-size: 12px;
+        margin-left: 4px;
+      }
+      .news-date {
+        color: #9ca3af;
+        font-size: 12px;
+      }
+      .error {
+        color: #b91c1c;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <h1>구글 뉴스 (Vue + Fetch)</h1>
+
+      <button @click="fetchNews" :disabled="loading">
+        {{ loading ? "로딩 중..." : "뉴스 새로고침" }}
+      </button>
+
+      <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
+
+      <ul v-if="newsList.length" class="news-list">
+        <li v-for="(item, idx) in newsList" :key="idx" class="news-item">
+          <a
+            class="news-title"
+            :href="item.link"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {{ item.title }}
+          </a>
+          <span class="news-source"> ({{ item.source || "출처 없음" }}) </span>
+          <div class="news-date">{{ item.pubDate }}</div>
+        </li>
+      </ul>
+
+      <p v-else-if="!loading && !errorMessage">표시할 뉴스가 없습니다.</p>
+    </div>
+
+    <script>
+      const { createApp, ref, onMounted } = Vue;
+
+      createApp({
+        setup() {
+          const newsList = ref([]);
+          const loading = ref(false);
+          const errorMessage = ref("");
+
+          const fetchNews = async () => {
+            loading.value = true;
+            errorMessage.value = "";
+
+            try {
+              const res = await fetch("/news/google-news");
+              if (!res.ok) {
+                throw new Error("HTTP 오류: " + res.status);
+              }
+
+              const data = await res.json(); // List<GoogleNews> 배열
+              newsList.value = data;
+            } catch (err) {
+              console.error(err);
+              errorMessage.value = "뉴스를 불러오는 중 오류가 발생했습니다.";
+            } finally {
+              loading.value = false;
+            }
+          };
+
+          // 페이지 진입 시 한 번 자동으로 호출
+          onMounted(() => {
+            fetchNews();
+          });
+
+          return {
+            newsList,
+            loading,
+            errorMessage,
+            fetchNews,
+          };
+        },
+      }).mount("#app");
+    </script>
+  </body>
+</html>

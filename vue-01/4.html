@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <style>
+      body {
+        font-family: Arial;
+        padding: 20px;
+      }
+      .box {
+        border: 1px solid #ddd;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 8px;
+        background: #f8faff;
+      }
+      input {
+        padding: 8px;
+        font-size: 16px;
+        width: 250px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Vue 이벤트 실습 — @input / @change / @keyup 차이</h1>
+
+    <div id="app">
+      <!-- @input -->
+      <div class="box">
+        <h3>1. @input — 입력할 때마다 즉시 실행</h3>
+        <input placeholder="입력해보세요" @input="onInput" />
+        <p>이벤트 발생: <b>{{ inputMsg }}</b></p>
+      </div>
+
+      <!-- @change -->
+      <div class="box">
+        <h3>2. @change — 엔터 or 다른 곳 클릭해야 실행</h3>
+        <input placeholder="입력한 후 엔터 또는 밖 클릭" @change="onChange" />
+        <p>이벤트 발생: <b>{{ changeMsg }}</b></p>
+      </div>
+
+      <!-- @keyup -->
+      <div class="box">
+        <h3>3. @keyup — 키를 눌렀다가 뗄 때 실행</h3>
+        <input placeholder="키보드 입력해보세요" @keyup="onKeyup" />
+        <p>이벤트 발생: <b>{{ keyupMsg }}</b></p>
+      </div>
+    </div>
+
+    <script>
+      const { createApp, ref } = Vue;
+
+      const app = createApp({
+        setup() {
+          const inputMsg = ref("");
+          const changeMsg = ref("");
+          const keyupMsg = ref("");
+
+          const onInput = (e) => {
+            inputMsg.value = "입력 중: " + e.target.value;
+          };
+
+          const onChange = (e) => {
+            changeMsg.value = "변경됨: " + e.target.value;
+          };
+
+          const onKeyup = (e) => {
+            keyupMsg.value = "키업: " + e.key + " (값: " + e.target.value + ")";
+          };
+
+          return { inputMsg, changeMsg, keyupMsg, onInput, onChange, onKeyup };
+        },
+      }).mount("#app");
+    </script>
+  </body>
+</html>

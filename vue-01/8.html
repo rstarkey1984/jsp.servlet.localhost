@@ -1,0 +1,24 @@
+<button id="btn">뉴스 불러오기</button>
+<ul id="list"></ul>
+
+<script>
+  async function loadNews() {
+    const res = await fetch("/news/google-news");
+    const news = await res.json();
+
+    const ul = document.querySelector("#list");
+    ul.innerHTML = "";
+
+    news.forEach((n) => {
+      const li = document.createElement("li");
+      li.innerHTML = `
+            <a href="${n.link}" target="_blank">${n.title}</a>
+            <span>(${n.source})</span>
+            <div>${n.pubDate}</div>
+        `;
+      ul.appendChild(li);
+    });
+  }
+
+  document.querySelector("#btn").addEventListener("click", loadNews);
+</script>

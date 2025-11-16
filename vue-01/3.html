@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Vue 반응성(ref, reactive) 완전 이해</title>
+
+    <!-- Vue 3 CDN 불러오기 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <style>
+      /* 기본 스타일 */
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        padding: 20px;
+      }
+      .box {
+        border: 1px solid #ccc;
+        padding: 12px;
+        border-radius: 8px;
+        background: #f7faff;
+        margin: 20px 0;
+      }
+      h2 {
+        margin-top: 40px;
+      }
+      pre {
+        background: #2d2d2d;
+        color: #ddd;
+        padding: 15px;
+        border-radius: 8px;
+        overflow-x: auto;
+      }
+      button {
+        padding: 8px 14px;
+        font-size: 15px;
+        border-radius: 6px;
+        cursor: pointer;
+        border: none;
+        background: #2563eb;
+        color: white;
+      }
+      button:hover {
+        background: #1d4ed8;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Vue의 반응성(Reactivity) — ref() & reactive()</h1>
+
+    <p>
+      Vue는 "데이터가 바뀌면 UI가 자동으로 업데이트"되는
+      <b>반응성(Reactivity)</b> 기능을 제공합니다.<br />
+      아래의 두 예제를 실행해보면 <b>ref()</b>와 <b>reactive()</b>가 어떤
+      방식으로 값을 추적하는지 쉽게 이해할 수 있습니다.
+    </p>
+
+    <hr />
+
+    <!-- ----------------------------------------
+         1. ref() 예제
+         ---------------------------------------- -->
+    <h2>1. ref() — 단일 값을 감싸는 반응형 박스</h2>
+
+    <!-- ref() 앱이 적용될 영역 -->
+    <div id="refApp" class="box">
+      <h3>📦 ref() 시각화</h3>
+
+      <!-- ref가 내부적으로 어떻게 보이는지 설명 -->
+      <pre>
+count = ref(0)
+
+실제 내부 구조:
+count = {
+  value: 0   ← 진짜 값은 여기 들어있음!
+}
+</pre
+      >
+
+      <!-- ref는 템플릿 안에서는 .value 없이 자동으로 꺼내서 렌더링됨 -->
+      <p>현재 값: <b>{{ count }}</b></p>
+
+      <!-- ref 값 증가 -->
+      <button @click="count++">+1 증가</button>
+    </div>
+
+    <hr />
+
+    <!-- ----------------------------------------
+         2. reactive() 예제
+         ---------------------------------------- -->
+    <h2>2. reactive() — 객체를 통째로 반응형으로</h2>
+
+    <!-- reactive() 앱이 적용될 영역 -->
+    <div id="reactiveApp" class="box">
+      <h3>🧰 reactive() 시각화</h3>
+
+      <!-- reactive가 Proxy 객체임을 설명 -->
+      <pre>
+user = reactive({
+  name: "Tom",
+  age: 30
+})
+
+내부 구조:
+Proxy 객체로 감싸져서 속성 변화를 자동 감지!
+</pre
+      >
+
+      <!-- reactive는 .value 없이 바로 속성 접근 -->
+      <p>
+        이름: <b>{{ user.name }}</b><br />
+        나이: <b>{{ user.age }}</b>
+      </p>
+
+      <!-- reactive 객체 속성 변경 -->
+      <button @click="user.age++">나이 +1</button>
+      <button @click="user.name = 'Jane'">이름 변경 (Tom → Jane)</button>
+    </div>
+
+    <hr />
+
+    <!-- 요약 박스 -->
+    <h2>3. 정리해보자</h2>
+
+    <div class="box">
+      <ul>
+        <li><b>ref()</b> → 숫자·문자 같은 '단일 값'을 감싸 반응형으로 만듦</li>
+        <li><b>reactive()</b> → 여러 속성을 가진 '객체 전체를' 반응형 처리</li>
+        <li>ref는 <code>.value</code> 안에 실제 값이 저장됨</li>
+        <li>reactive는 Proxy라서 <code>user.name</code> 처럼 바로 접근</li>
+        <li>
+          템플릿에서는 ref도 <code>.value</code> 없이 {{ count }}로 접근 가능
+        </li>
+      </ul>
+    </div>
+
+    <!-- ----------------------------------------
+         Vue 코드 (refApp, reactiveApp 각각 따로 mount)
+         ---------------------------------------- -->
+    <script>
+      // #1 ref() 예제
+      // - ref(0) : "count" 값을 반응형 변수로 만듦
+      const { createApp, ref, reactive } = Vue;
+
+      createApp({
+        setup() {
+          const count = ref(0); // ref는 value 속성 안에 실제 값이 들어감
+          return { count }; // 템플릿에서 count 사용 가능
+        },
+      }).mount("#refApp");
+
+      // #2 reactive() 예제
+      // - 객체 전체를 Proxy로 감싸서 속성 변화를 추적함
+      createApp({
+        setup() {
+          const user = reactive({
+            name: "Tom",
+            age: 30,
+          });
+          return { user }; // 템플릿에서 user.name 으로 접근 가능
+        },
+      }).mount("#reactiveApp");
+    </script>
+  </body>
+</html>

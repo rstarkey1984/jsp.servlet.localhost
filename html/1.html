@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>바닐라 JS 카운터</title>
+  </head>
+  <body>
+    <div id="app" style="text-align: center">
+      <p>Count: <span id="count">0</span></p>
+      <button id="btn">+1</button>
+    </div>
+
+    <script>
+      // 상태(state)를 자바스크립트 변수로 직접 관리
+      let count = 0;
+
+      // DOM 요소 찾아오기
+      const countEl = document.getElementById("count");
+      const btnEl = document.getElementById("btn");
+
+      // 버튼 클릭 이벤트 등록
+      btnEl.addEventListener("click", function () {
+        count = count + 1; // 1. 상태 값 변경
+        countEl.textContent = count; // 2. 화면(DOM)에 직접 반영
+      });
+    </script>
+  </body>
+</html>

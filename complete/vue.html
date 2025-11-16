@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Vue 게시판 SPA (CDN, Composition API)</title>
+    <!-- Vue 3 CDN: 전역 변수 Vue 제공 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- 공통 CSS (네가 만든 vue.css 사용) -->
+    <link rel="stylesheet" href="/complete/vue.css" />
+  </head>
+  <body>
+    <div id="app">
+      <h1>Vue + 서블릿 게시판 SPA (Composition API)</h1>
+
+      <!-- 로그인 / 로그아웃 / 회원가입 -->
+      <div class="card">
+        <h2>로그인 / 회원가입</h2>
+
+        <!-- 🔥 여기 추가: 로그인/회원가입 오류/성공 알림 -->
+        <div v-if="loginError" class="alert alert-error">{{ loginError }}</div>
+        <div v-if="registerError" class="alert alert-error">
+          {{ registerError }}
+        </div>
+        <div v-if="registerSuccess" class="alert alert-success">
+          {{ registerSuccess }}
+        </div>
+        <!-- --------------------------------------- -->
+
+        <!-- 이미 로그인한 경우 -->
+        <div v-if="loginUserId" class="row">
+          <div>안녕하세요, <strong>{{ loginUserId }}</strong> 님 👋</div>
+          <button class="secondary" @click="logout">로그아웃</button>
+        </div>
+
+        <!-- 로그인 안 된 경우: 로그인/회원가입 탭 -->
+        <div v-else>
+          <!-- 모드 전환 버튼 -->
+          <div class="row" style="margin-bottom: 12px; gap: 6px">
+            <button
+              type="button"
+              :class="['secondary', { primary: authMode === 'login' }]"
+              @click="authMode = 'login'"
+            >
+              로그인
+            </button>
+            <button
+              type="button"
+              :class="['secondary', { primary: authMode === 'register' }]"
+              @click="authMode = 'register'"
+            >
+              회원가입
+            </button>
+          </div>
+
+          <!-- 로그인 폼 -->
+          <form v-if="authMode === 'login'" @submit.prevent="login">
+            <div class="row" style="margin-bottom: 8px">
+              <div>
+                <label>
+                  아이디
+                  <input v-model="loginForm.id" placeholder="아이디" />
+                </label>
+              </div>
+              <div>
+                <label>
+                  비밀번호
+                  <input
+                    v-model="loginForm.password"
+                    type="password"
+                    placeholder="비밀번호"
+                  />
+                </label>
+              </div>
+              <div>
+                <button class="primary" type="submit" :disabled="loading">
+                  로그인
+                </button>
+              </div>
+            </div>
+            <div class="muted">
+              ※ 예제용으로 API에 로그인만 요청하고, 클라이언트에서
+              localStorage로 로그인 상태를 기억합니다.
+            </div>
+          </form>
+
+          <!-- 회원가입 폼 -->
+          <form v-else @submit.prevent="register">
+            <div style="margin-bottom: 8px">
+              <label>
+                아이디 (최대 20자)
+                <input
+                  v-model="registerForm.id"
+                  placeholder="아이디"
+                  maxlength="20"
+                />
+              </label>
+            </div>
+            <div style="margin-bottom: 8px">
+              <label>
+                비밀번호
+                <input
+                  v-model="registerForm.password"
+                  type="password"
+                  placeholder="비밀번호"
+                />
+              </label>
+            </div>
+            <div style="margin-bottom: 8px">
+              <label>
+                이메일 (최대 45자)
+                <input
+                  v-model="registerForm.email"
+                  type="email"
+                  placeholder="이메일"
+                  maxlength="45"
+                />
+              </label>
+            </div>
+
+            <button class="primary" type="submit" :disabled="loading">
+              회원가입
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- 게시판 목록 / 페이징 -->
+      <div class="card">
+        <div class="row" style="justify-content: space-between">
+          <h2>게시판 목록</h2>
+          <div class="row">
+            <span class="muted">페이지당</span>
+            <!-- v-model.number : 문자열이 아닌 숫자로 바인딩 -->
+            <select v-model.number="size" @change="changeSize">
+              <option :value="5">5개</option>
+              <option :value="10">10개</option>
+              <option :value="20">20개</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 🔥 여기 추가: 목록 관련 에러 -->
+        <div v-if="boardError" class="alert alert-error">{{ boardError }}</div>
+        <!-- ---------------------------------- -->
+
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 60px">번호</th>
+              <th style="width: 120px">작성자</th>
+              <th>제목</th>
+              <th style="width: 160px" class="right">액션</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-if="boards.length === 0">
+              <td colspan="3" class="muted">게시글이 없습니다.</td>
+            </tr>
+
+            <tr v-for="b in boards" :key="b.idx">
+              <td>{{ b.idx }}</td>
+              <!-- 🔥 작성자 표시 -->
+              <td>{{ b.fk_user_id || '(익명)' }}</td>
+              <td>
+                <div>{{ b.title || '(제목 없음)' }}</div>
+
+                <!-- 내용 미리보기 (최대 5줄) -->
+                <div
+                  class="muted small content-preview"
+                  :class="{ expanded: expandedBoardId === b.idx }"
+                >
+                  {{ b.content || '(내용 없음)' }}
+                </div>
+
+                <!-- 더보기 / 접기 버튼 -->
+                <button
+                  v-if="b.content && b.content.length > 120"
+                  type="button"
+                  class="link-button"
+                  @click="toggleContent(b.idx)"
+                >
+                  {{ expandedBoardId === b.idx ? '접기' : '더보기' }}
+                </button>
+              </td>
+              <td class="right">
+                <button
+                  class="secondary"
+                  @click="startEdit(b)"
+                  :disabled="loading"
+                >
+                  수정
+                </button>
+                <button
+                  class="danger"
+                  style="margin-left: 4px"
+                  @click="deleteBoard(b.idx)"
+                  :disabled="loading"
+                >
+                  삭제
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- 페이징 버튼 -->
+        <div
+          class="row"
+          style="justify-content: space-between; margin-top: 10px"
+        >
+          <div>
+            <button
+              class="secondary"
+              @click="prevPage"
+              :disabled="page <= 1 || loading"
+            >
+              ◀ 이전
+            </button>
+            <button
+              class="secondary"
+              style="margin-left: 4px"
+              @click="nextPage"
+              :disabled="!hasNext || loading"
+            >
+              다음 ▶
+            </button>
+          </div>
+          <div class="muted">현재 페이지: {{ page }}</div>
+        </div>
+      </div>
+
+      <!-- 글쓰기 / 수정 폼 -->
+      <div class="card">
+        <h2 v-if="boardMode === 'create'">글쓰기</h2>
+        <h2 v-else>게시글 수정 (번호: {{ boardForm.idx }})</h2>
+
+        <!-- 🔥 여기 추가: 글쓰기/수정 에러/성공 -->
+        <div v-if="formError" class="alert alert-error">{{ formError }}</div>
+        <div v-if="formSuccess" class="alert alert-success">
+          {{ formSuccess }}
+        </div>
+        <!-- ---------------------------------- -->
+
+        <!-- submit 시 submitBoard() 호출 -->
+        <form @submit.prevent="submitBoard">
+          <div style="margin-bottom: 8px">
+            <label>
+              제목
+              <!-- boardForm(reactive) 의 title과 바인딩 -->
+              <input
+                v-model="boardForm.title"
+                placeholder="제목을 입력하세요"
+                style="width: 100%; box-sizing: border-box"
+                maxlength="45"
+              />
+            </label>
+          </div>
+          <div style="margin-bottom: 8px">
+            <label>
+              내용
+              <textarea
+                v-model="boardForm.content"
+                placeholder="내용을 입력하세요"
+              ></textarea>
+            </label>
+          </div>
+          <div class="row" style="justify-content: flex-end">
+            <!-- 수정 모드일 때만 취소 버튼 -->
+            <button
+              v-if="boardMode === 'edit'"
+              type="button"
+              class="secondary"
+              @click="cancelEdit"
+              :disabled="loading"
+            >
+              취소
+            </button>
+            <!-- 등록/수정 공용 버튼 -->
+            <button
+              class="primary"
+              type="submit"
+              :disabled="loading || !loginUserId"
+              style="margin-left: 6px"
+            >
+              {{ boardMode === 'create' ? '등록' : '수정 완료' }}
+            </button>
+          </div>
+          <div class="muted" style="margin-top: 4px">
+            ※ "로그인한 아이디가 있어야" 글 작성/수정 버튼이 활성화됩니다.
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Vue 코드 외부 파일 -->
+    <script src="/complete/vue.js"></script>
+  </body>
+</html>
